@@ -1,0 +1,70 @@
+% COMMANDS: Custom Commands and Utilities
+
+
+
+% --------------------------------------------------
+% Helper Utilities
+% --------------------------------------------------
+
+% easy quotation
+\newcommand{\q}[1]{\glqq#1\grqq}
+\newcommand{\qbf}[1]{\textbf{\glqq#1\grqq}}
+\newcommand{\qit}[1]{\textit{\glqq#1\grqq}}
+
+% circled numbers
+\newcommand{\circled}[1]{\textcircled{\raisebox{-.9pt}{#1}}}
+
+% default values for easy images
+\newcommand{\defaultImageSize}{0.9}
+\newcommand{\defaultImageFileType}{png}
+
+% easy images
+\newcommand{\image}[5]{
+    \begin{figure}[#1]
+    \centering
+    \ifthenelse{\equal{#2}{True}}{
+        \frame{\includegraphics[width=#3\textwidth]{#4.\defaultImageFileType}}
+    }{
+        \includegraphics[width=#3\textwidth]{#4.\defaultImageFileType}
+    }
+    \caption{#5}
+    \label{fig:#4}
+    \end{figure}
+}
+
+% easy marking
+\newcommand{\checkmarkLight}{\ding{51}}
+\newcommand{\crossmarkLight}{\ding{55}}
+\newcommand{\checkmarkBold}{\ding{52}}
+\newcommand{\crossmarkBold}{\ding{56}}
+
+% --------------------------------------------------
+% Task Helpers
+% --------------------------------------------------
+
+% counter for tracking points
+\newcounter{universityTaskPoints}
+\newcounter{universityTaskCounter}
+
+% command to convert simple points to points with leading zero and correct singular or plural form
+\newcommand{\universityFormatPoints}[1]{
+    \ifnum#1<10
+    \ifnum#1=1
+    0#1 Punkt
+    \else
+        0#1 Punkte
+    \fi
+    \else
+        #1 Punkte
+    \fi
+}
+
+% command to add points for subtasks
+\newcommand{\universityPoints}[1]{
+    \addtocounter{universityTaskPoints}{#1}
+    \addtocounter{universityTaskCounter}{1}
+    \par\vspace{0.5em}
+    \begin{flushright}
+    \textit{\textbf{\universityFormatPoints{#1}}}
+    \end{flushright}
+}

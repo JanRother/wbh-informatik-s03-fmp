@@ -1,0 +1,121 @@
+% !TEX root = paper.tex
+% !TEX option = --shell-escape
+% MAIN DOCUMENT
+
+% In case of renaming this file:
+% adjust the @default_files attribute in the .latexmkrc file
+
+% change meta text values in ./meta/parameters.tex
+% save chapters and corresponding data in ./chapters/XX/
+% save images in ./images/
+% remove ./example/ from the project root and clear references in this file
+% add imports to ./meta/packages.tex, only if necessary
+
+% version from 2026-01
+
+
+
+\documentclass[a4paper, oneside, 11pt]{book}
+\usepackage[utf8]{inputenc}
+
+% --------------------------------------------------
+% Configurations
+% --------------------------------------------------
+
+\newif\ifdraft
+\draftfalse												% flag: marks document as draft and shows to-do-notes, comment or set to "draftfalse"
+
+\input{./meta/preamble}									% load meta configurations
+
+\setcounter{chapter}{0}									% set chapter counter to -1 to start with 0
+
+\addbibresource{literature.bib}							% import bibliography
+
+\makeglossaries											% create glossary
+\loadglsentries{./main/glossaries.tex}					% load glossary entries
+
+\DefineBibliographyStrings{ngerman}{					% define bibliography strings for german language:
+    andothers = {\acrshort{etal}}						% - string for \citeauthor of more than three authors
+}
+\setcounter{biburlucpenalty}{9000}						% set url line break penalties for upper case letters in the bibliography
+\setcounter{biburllcpenalty}{9000}						% set url line break penalties for lower case letters in the bibliography
+
+\graphicspath{{images/}}								% set graphics path
+
+% --------------------------------------------------
+% Document
+% --------------------------------------------------
+
+\begin{document}
+
+	%---------------------------------------------------------------
+	% Document: Front Matter
+	%---------------------------------------------------------------
+
+	\listoftodos
+	\input{main/cover}
+
+	\ifbool{thesis}{
+		\input{./main/preface}
+		\input{./main/abstract}
+	}{}
+
+	\input{./main/affidavit}
+
+	\tableofcontents
+
+	\ifbool{assignment}{}{
+		\printglossary[type=\acronymtype, title=Abkürzungsverzeichnis, style=listdotted]
+		\printglossary[type=\glsdefaulttype, title=Glossar] % style: see meta/header.tex
+	}
+
+	\glsresetall
+
+	%---------------------------------------------------------------
+	% Document: Main Matter
+	%---------------------------------------------------------------
+
+	\mainmatter
+
+	\ifbool{assignment}{
+		\renewcommand{\chaptername}{Aufgabe}
+	}
+	
+	\input{./chapters/00/_abstract}
+	\input{./chapters/01/_section}
+
+	%-----------------------------------------------------------
+	% Document: Back Matter
+	%-----------------------------------------------------------
+
+	\clearpage\phantomsection
+	\renewcommand{\bibname}{Literaturverzeichnis}			% set bibliography title, default: Literatur
+	\addcontentsline{toc}{chapter}{Literaturverzeichnis}
+	\printbibliography
+
+	\begingroup
+		\clearpage\phantomsection
+			\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+			\listoffigures
+		%\let\clearpage\relax
+		%\let\cleardoublepage\relax
+		\ifbool{thesis}{\clearpage\phantomsection}{}
+			\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
+			\listoftables
+		\ifbool{thesis}{\clearpage\phantomsection}{}
+			\addcontentsline{toc}{chapter}{Verzeichnis der Codeausschnitte}
+			\listofsnippets
+	\endgroup
+	
+	\clearpage
+
+	%-----------------------------------------------------------
+	% Document: Appendix
+	%-----------------------------------------------------------
+
+	\appendix
+	\renewcommand{\chaptername}{Anhang}
+	\pagenumbering{Roman}
+	\addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
+
+\end{document}

@@ -1,0 +1,254 @@
+############################################################
+########### Workflow: Document Build and Release ###########
+######################### -> Paper #########################
+############################################################
+
+########## AUTHOR: Jan Rother
+########## DATE:   2026-08
+
+name: Build and Release Document 'Paper' from LaTeX as PDF and MD
+
+env:
+  DATE_MODE: build
+  DOCUMENT_TIMEZONE: Europe/Berlin
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+    paths:
+      - 'paper/**'
+  pull_request:
+    branches:
+      - main
+      - 'release/**'
+    paths:
+      - 'paper/**'
+
+jobs:
+  prepare_metadata:
+    runs-on: ubuntu-latest
+    outputs:
+      datetime: ${{ steps.datetime.outputs.DATETIME }}
+      root_name: ${{ env.ROOT_NAME }}
+      base_name: ${{ env.BASE_NAME }}
+      file_name_pdf: ${{ steps.set_file_name.outputs.FILE_NAME_PDF }}
+      file_name_md: ${{ steps.set_file_name.outputs.FILE_NAME_MD }}
+      tag_name: ${{ steps.set_tag_name.outputs.TAG_NAME }}
+      release_name: ${{ steps.set_release_name.outputs.RELEASE_NAME }}
+    env:
+      ROOT_NAME: paper
+      BASE_NAME: paper
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Ensure German Locale Availability
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y locales
+          sudo locale-gen de_DE.UTF-8
+          sudo update-locale LC_TIME=de_DE.UTF-8
+
+      - name: Get Date and Time
+        id: datetime
+        run: echo "DATETIME=$(date +'%Y-%m-%d_%H-%M')" >> $GITHUB_OUTPUT
+
+      - name: Generate Date Metadata
+        run: bash paper/scripts/generate-date.sh
+
+      - name: Upload Date Metadata
+        uses: actions/upload-artifact@v6
+        with:
+          name: date_metadata
+          path: paper/meta/parameters-date-generated.tex
+          if-no-files-found: error
+      
+      - name: Set File Name
+        id: set_file_name
+        run: |
+          echo "FILE_NAME_PDF=${{ env.BASE_NAME }}_${{ steps.datetime.outputs.DATETIME }}.pdf" >> $GITHUB_OUTPUT
+          echo "FILE_NAME_MD=${{ env.BASE_NAME }}_${{ steps.datetime.outputs.DATETIME }}.md" >> $GITHUB_OUTPUT
+      
+      - name: Set Tag Name
+        id: set_tag_name
+        run: echo "TAG_NAME=${{ env.BASE_NAME }}_${{ steps.datetime.outputs.DATETIME }}" >> $GITHUB_OUTPUT
+      
+      - name: Set Release Name
+        id: set_release_name
+        run: |
+          BASE="${{ env.BASE_NAME }}"
+          BASE_CAP="${BASE^}"
+          echo "RELEASE_NAME=${BASE_CAP} (${{ steps.datetime.outputs.DATETIME }})" >> $GITHUB_OUTPUT
+      
+      - name: Output Metadata
+        run: |
+          echo "Metadata Overview: "
+          echo " "
+          echo "    DateTime ......... ${{ steps.datetime.outputs.DATETIME }}"
+          echo "    Root Name ........ ${{ env.ROOT_NAME }}"
+          echo "    Base Name ........ ${{ env.BASE_NAME }}"
+          echo "    File Names ....... ${{ steps.set_file_name.outputs.FILE_NAME_PDF }}, ${{ steps.set_file_name.outputs.FILE_NAME_MD }}"
+          echo "    Tag Name ......... ${{ steps.set_tag_name.outputs.TAG_NAME }}"
+          echo "    Release Name ..... ${{ steps.set_release_name.outputs.RELEASE_NAME }}"
+
+
+
+  build_pdf:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare_metadata
+    env:
+      ROOT_NAME: ${{ needs.prepare_metadata.outputs.root_name }}
+      BASE_NAME: ${{ needs.prepare_metadata.outputs.base_name }}
+      FILE_NAME_PDF: ${{ needs.prepare_metadata.outputs.file_name_pdf }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v6
+
+      - name: Download Date Metadata
+        uses: actions/download-artifact@v5
+        with:
+          name: date_metadata
+          path: paper/meta
+
+      - name: Compile LaTeX Document
+        id: compile_document
+        uses: xu-cheng/latex-action@v4
+        with:
+          root_file: ${{ env.ROOT_NAME }}.tex
+          working_directory: paper
+          docker_image: janrother/latex-environment:latest
+          pre_compile: "tlmgr update --self || true && tlmgr update --all || true && git lfs fetch --all && git lfs pull"
+      
+      - name: Update Output Ownership
+        run: sudo chown -R $USER:$USER paper/out/
+
+      - name: Copy and Rename PDF Document
+        run: |
+          mkdir -p paper/out
+          cp paper/out/${{ env.ROOT_NAME }}.pdf paper/out/${{ env.FILE_NAME_PDF }}
+
+      - name: Upload PDF Document
+        id: upload_document
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.BASE_NAME }}_pdf
+          path: paper/out/${{ env.FILE_NAME_PDF }}
+          overwrite: 'true'
+  
+
+
+  convert_md:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare_metadata
+      - build_pdf
+    env:
+      BASE_NAME: ${{ needs.prepare_metadata.outputs.base_name }}
+      FILE_NAME_PDF: ${{ needs.prepare_metadata.outputs.file_name_pdf }}
+      FILE_NAME_MD: ${{ needs.prepare_metadata.outputs.file_name_md }}
+    steps:
+      - name: Download PDF Artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: ${{ env.BASE_NAME }}_pdf
+          path: out
+      
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.x'
+      
+      - name: Install Docling Dependency
+        run: pip install docling
+      
+      - name: Convert PDF to Markdown using Docling
+        run: |
+          python - <<'EOF'
+          from pathlib import Path
+          from docling.document_converter import DocumentConverter
+
+          converter = DocumentConverter()
+
+          source = Path("out/${{ env.FILE_NAME_PDF }}")
+          sink = Path("out/${{ env.FILE_NAME_MD }}")
+          
+          print(f"Converting {source.name} ...")
+          result = converter.convert(source)
+
+          sink.write_text(result.document.export_to_markdown(), encoding="utf-8")
+          print(f"Converted to {sink.name}.")
+
+          print(f"File is available at: {sink.resolve()}")
+          EOF
+      
+      - name: Upload MD Document
+        id: upload_md_document
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ env.BASE_NAME }}_md
+          path: out/${{ env.FILE_NAME_MD }}
+          overwrite: 'true'
+
+
+
+  release_documents:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    needs:
+      - prepare_metadata
+      - build_pdf
+      - convert_md
+    env:
+      BASE_NAME: ${{ needs.prepare_metadata.outputs.base_name }}
+      FILE_NAME_PDF: ${{ needs.prepare_metadata.outputs.file_name_pdf }}
+      FILE_NAME_MD: ${{ needs.prepare_metadata.outputs.file_name_md }}
+      TAG_NAME: ${{ needs.prepare_metadata.outputs.tag_name }}
+      RELEASE_NAME: ${{ needs.prepare_metadata.outputs.release_name }}
+    steps:
+      - name: Download PDF Artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: ${{ env.BASE_NAME }}_pdf
+          path: out
+      
+      - name: Download MD Artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: ${{ env.BASE_NAME }}_md
+          path: out
+
+      - name: Create Release based on Artifacts
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: ${{ env.RELEASE_NAME }}
+          draft: false
+          prerelease: false
+
+      - name: Upload PDF Document to Release
+        id: upload_pdf_release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: out/${{ env.FILE_NAME_PDF }}
+          asset_name: ${{ env.FILE_NAME_PDF }}
+          asset_content_type: application/pdf
+      
+      - name: Upload MD Document to Release
+        id: upload_md_release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: out/${{ env.FILE_NAME_MD }}
+          asset_name: ${{ env.FILE_NAME_MD }}
+          asset_content_type: text/markdown
