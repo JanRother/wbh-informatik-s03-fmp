@@ -1,0 +1,451 @@
+# Wilhelm Büchner Hochschule | Assignment: Forschungsmethoden und Projektmanagement (Paper)
+
+> Wilhelm Büchner Hochschule  
+> Computer Science  
+> Assignment: Forschungsmethoden und Projektmanagement  
+>
+> Paper
+>
+> **Template Thesis**  
+> from [github.com/janrother/template-thesis-wbh](https://github.com/janrother/template-thesis-wbh/)  
+> 
+> Jan Rother  
+> janrother02@gmail.com  
+> 
+> 2026-08
+
+## Table of Contents
+
+<!-- TOC -->
+- [Wilhelm Büchner Hochschule | Assignment: Forschungsmethoden und Projektmanagement (Paper)](#wilhelm-büchner-hochschule--assignment-forschungsmethoden-und-projektmanagement-paper)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Summary and Overview](#summary-and-overview)
+  - [Getting Started](#getting-started)
+  - [Usage](#usage)
+    - [Repository](#repository)
+    - [Toolchain](#toolchain)
+    - [Setup](#setup)
+    - [Editing the Document](#editing-the-document)
+      - [Structure](#structure)
+      - [Files for the Thesis](#files-for-the-thesis)
+      - [Files for the Toolchain](#files-for-the-toolchain)
+    - [Configuring the Document](#configuring-the-document)
+    - [Automated Metadata Dates](#automated-metadata-dates)
+    - [Writing](#writing)
+    - [Compiling](#compiling)
+    - [Cleaning Up](#cleaning-up)
+    - [Miscellaneous](#miscellaneous)
+  - [Utilizing Development Container](#utilizing-development-container)
+    - [DevContainer](#devcontainer)
+    - [Getting Started locally](#getting-started-locally)
+      - [Prerequisites](#prerequisites)
+      - [Getting the Docker Image](#getting-the-docker-image)
+      - [Starting the Development Container](#starting-the-development-container)
+    - [Getting Started in the Cloud](#getting-started-in-the-cloud)
+      - [Prerequisites](#prerequisites-1)
+      - [Starting a Code Space](#starting-a-code-space)
+    - [Adjust to every Need](#adjust-to-every-need)
+    - [Compatibility](#compatibility)
+  - [Note](#note)
+<!-- TOC -->
+
+-----
+
+> **Important:**  
+> This template repository is configured for the use of [Git LFS](https://git-lfs.com/) to store large binary files.  
+> If encountering any VCS related issues, have a look at the [Repository](#repository) section for further assistance.
+
+## Introduction
+
+This subfolder contains the artifact of the paper for the assignment of the module "Forschungsmethoden und Projektmanagement" at the Wilhelm Büchner Hochschule.
+
+## Summary and Overview
+
+The subfolder holds any document in a specific structure, which is required for the creation of the paper based on the [Template Thesis](https://github.com/JanRother/template-thesis-wbh). Most of the files are text-based files.
+
+Details are explained below.
+
+## Getting Started
+
+This checklist helps getting started with the template thesis and provides information about what to configure and what to set up for the document to fit the actual needs.
+
+- [ ] Create an empty **repository** on *GitHub* for the project and clone it on the local machine.
+- [ ] Add a *GitHub* personal access token with `repo` scope as `GH_TOKEN` secret in the repository settings, to enable automatic releases.
+- [ ] Clone the **template repository** and copy it into the local repository.
+- [ ] Make an initial **commit** including the `README.md`, `.gitignore`, and `.gitattributes` files with the message `initial commit`.
+- [ ] Set up the **toolchain** by installing the required software on your system.
+- [ ] Add information about the document in the [Introduction](#introduction) section of this [README.md](README.md) file.
+- [ ] Adjust the **pipeline configuration** in the `.github/workflows/` directory:
+  - Remove the `docker-image.yaml` workflow.
+  - Adjust the `document.yaml` workflow, especially the environment variables of the `prepare_metadata` job (`ROOT_NAME` for the main file name without extension and `BASE_NAME` for the base name of the output files).
+- [ ] Adjust the **document configuration**:
+  - Rename the main file `main.tex`, for example to `thesis.tex` or `assignment.tex`.
+  - Adjust the output file name in the `.latexmkrc` file and the workflow configuration accordingly.
+- [ ] Configure the **document** by adjusting the settings in the files located in the `./meta/` directory.
+  - Adjust the content of the `parameters.tex` file to individualize the document.
+  - Remove the `example` chapter and the `template` chapter from the `./chapters/` directory.
+  - Remove the `p-00_example-picture.png` from the `./images/` directory.
+  - Remove template literature from the `literature.bib` file.
+  - Add new chapters as needed in the `./chapters/` directory and stick to the conventions.
+  - Adjust the `main.tex` accordingly to include only the necessary content.
+- [ ] Choose the metadata date mode with `DATE_MODE` if you want automated dates. `latexmk` defaults to manual mode unless you export the variable first.
+- [ ] Start **writing**.
+
+## Usage
+
+### Repository
+
+If you want to use this template, make sure to have Git LFS installed on your system by running `git lfs install`. If you want to use this template without Git LFS, adjust the `.gitattributes` file accordingly.
+
+Due to a `post-checkout` hook configured by Git LFS, security settings might prevent `git clone` or `git checkout` from working properly. Setting `GIT_CLONE_PROTECTION_ACTIVE=false` could prevent this issues. To access contents from Git LFS properly, run
+
+```shell
+git lfs fetch --all && \
+git lfs pull
+```
+
+Further information can be found in the [Git LFS Documentation](https://github.com/git-lfs/git-lfs/tree/main/docs?utm_source=gitlfs_site&utm_medium=docs_link&utm_campaign=gitlfs).
+
+### Toolchain
+
+The following tools form one possible way to compile the LaTeX document and are tested to work on Microsoft Windows 10 and higher.
+
+- **LaTeX Distribution**: [MiKTeX](https://miktex.org/) or `winget install --id=MiKTeX.MiKTeX  -e`
+- **Perl Distribution**: [Strawberry Perl](http://strawberryperl.com/) or `winget install -e --id StrawberryPerl.StrawberryPerl`
+- **Python Distribution**: [Python](https://www.python.org/) or `winget install -e --id Python.Python.3.10`
+- **Editor**: [Microsoft Visual Studio Code](https://code.visualstudio.com/)
+  - **LaTeX Language Support**: [LaTeX](https://marketplace.visualstudio.com/items?itemName=mathematic.vscode-latex)
+  - **LaTeX Workshop**: [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop)
+  - **LaTeX Utilities**: [LaTeX Utilities](https://marketplace.visualstudio.com/items?itemName=tecosaur.latex-utilities)
+- **Literature Management**: [BibLaTeX](https://www.ctan.org/pkg/biblatex) or [BibTeX](http://www.bibtex.org/)
+
+### Setup
+
+1. Install the *LaTeX* distribution *MiKTeX* from [miktex.org](https://miktex.org/) or via `winget install --id=MiKTeX.MiKTeX  -e`.
+2. Install the *Perl* distribution *Strawberry Perl* from [strawberryperl.com](http://strawberryperl.com/) or via `winget install -e --id StrawberryPerl.StrawberryPerl`.
+3. Install the *Python* distribution from [python.org](https://www.python.org/) or via `winget install -e --id Python.Python.3.10`.
+4. When planning to use packages like `minted` for code highlighting, install `pygments` and `latexminted` via `pip install pygments latexminted`.
+5. Install your preferred *LaTeX* editor with the recommended extensions for *LaTeX* support.
+6. Install a literature management tool, such as or exactly *BibLaTeX* or *BibTeX*.
+7. Ensure to have a *GIT* client installed on your system.
+8. Clone the repository to your local machine using `git clone`.
+9. Open the repository as a project in your preferred *LaTeX* editor, for example *Microsoft Visual Studio Code*.
+
+> **Note**:  
+> The above steps are a guideline for setting up the *LaTeX* environment on *Microsoft Windows*.  
+> For help with other operating systems, please refer to the documentation of the respective tools or look for help in other resources. For unix based systems, you can try the [Baeldung Tutorial](https://www.baeldung.com/linux/install-latex).
+
+### Editing the Document
+
+#### Structure
+
+```text
+TEMPLATE-THESIS-WBH
+.
+│   .gitattributes
+│   .gitignore
+│   .latexmkrc
+│   cleanup.bat
+│   cleanup.sh
+│   LICENSE
+│   literature.bib
+│   main.pdf
+│   main.tex
+│   README.md
+│   README.pdf
+│
+├───.devcontainer
+│   │   devcontainer.json
+│   │   Dockerfile
+│   │
+│   └───resources
+│           .zshrc
+│           starship.toml
+│           welcome.txt
+│
+├───.github
+│   └───workflows
+│           docker-image.yml
+│           document.yml
+│
+├───chapters
+│   ├───00
+│   │       _introduction-and-motivation.tex
+│   │
+│   ├───01
+│   │       _chapter.tex
+│   │       _task.tex
+│   │
+│   ├───99
+│   │       _ending-and-conclusion.tex
+│   │
+│   ├───AA
+│   │       _attachment.tex
+│   │
+│   ├───example
+│   │       example.tex
+│   │
+│   └───template
+│           template.tex
+│
+├───images
+│   │   p-00_example-picture.png
+│   │
+│   └───logos
+│           logo_wbh.png
+│           sublogo_wbh.png
+│
+├───main
+│       abstract.tex
+│       affidavit.tex
+│       cover.tex
+│       glossaries.tex
+│       preface.tex
+│
+├───meta
+│       commands.tex
+│       environments.tex
+│       header.tex
+│       hyphenation.tex
+│       listings.tex
+│       packages.tex
+│       parameters.tex
+│       preamble.tex
+│       styling.tex
+├───scripts
+│       cleanup-files
+│       cleanup.bat
+│       cleanup.sh
+│       generate-date.sh
+│
+└───out
+        main.pdf
+        ...
+```
+
+#### Files for the Thesis
+
+The document is structured into several files and directories, that fulfill different purposes:
+
+- The **main file** is `main.tex`. It includes all other files and sets the general structure of the document.
+- The **chapters** are located in the directory `./chapters`. Each chapter is a separate file and is included in the main file. It is recommended to copy the `./chapters/template/` directory to a new directory to create a new chapter. Note, that new chapters have to be included in the main file, otherwise they will not be compiled. The `./chapters/example/` directory provides an example chapter with a simple structure and some content. For chapters dedicated to the appendix, the `./chapters/AA/` directory is provided as template and can, if needed, be copied and expended to new chapters `./chapters/BB/`, `./chapters/CC/`, and so on.
+- The **meta data** such like document styles are located in the directory `./meta`. The files are included in the main file and provide the general settings and definitions for the document.
+  - `commands.tex` provides custom commands and utilities.
+  - `environments.tex` provides custom environments.
+  - `header.tex` provides settings for the document layout and appearance.
+  - `hyphenation.tex` provides custom hyphenation rules.
+  - `listings.tex` provides settings for all listings in the document.
+  - `packages.tex` list all required packages and their settings.
+  - `parameters.tex` provides the general parameters, configuration for the document and derived commands.
+  - `preamble.tex` provides the correct input order for the meta data files.
+  - `styling.tex` provides additional styling settings for the document.
+- Content that is not part of the chapters but is relevant for the document, is located in the directory `./main`. Those files contain text for pages outside the main matter.
+  - `abstract.tex` contains the abstract of the work in German and English. (only visible in `thesis`-mode, see [Configuring the Document](#configuring-the-document))
+  - `affidavit.tex` contains the affidavit that the work was created independently including placeholders for signatures.
+  - `cover.tex` contains the cover page of the document.
+  - `glossaries.tex` contains the glossaries and acronyms used in the document and controlled by the `glossaries` package.
+  - `preface.tex` contains the preface of the document. (only visible in `thesis`-mode, see [Configuring the Document](#configuring-the-document))
+- **Literature** can be added to the file `literature.bib`, by using the *BibTeX* format. Data having the *BibTeX* format can be obtained from various sources and most of the literature databases provide the possibility to export the data in the *BibTeX* format.
+- **Images** used in the document should be placed in the `./images/` directory. The directory `./images/logos/` is intended to store logos and other images used in the cover and the affidavit.
+
+#### Files for the Toolchain
+
+The following files are provided to support the toolchain and the usage of the document:
+
+- In the **`README.md`** file, all necessary information about the document and the template is provided.
+- The **`.gitignore`** file is used to exclude files and directories from the version control system *GIT*.
+- The **`.gitattributes`** file is used to define attributes like line endings or *GIT LFS* settings for the repository.
+- The **`LICENSE`** file provides the license of the document and the template.
+- To remove files associated to or created by the compilation, the cleanup launchers are available at the repository root and their canonical implementations live in `./scripts/`. Their usage is explained under [Cleaning Up](#cleaning-up).
+- The **`.devcontainer`** directory contains the configuration for the development container, which is used to provide a consistent development environment for the document.
+- The **`.github`** directory contains the configuration for the *GitHub Actions* workflows, including the one which is used to build and push the Docker image for the development container and the one which is used to compile the document. Note, that the `docker-image.yml` workflow is only used by the template repository to provide the ready-to-use development container image on *Docker Hub*. Therefore, it is recommended to remove this workflow from the repository, as it would most likely fail in a forked repository.
+- The **`./scripts/`** directory contains scripts for various purposes. For example, the `cleanup.sh` script removes build artifacts and the `generate-date.sh` script is used to generate the date metadata for the document.
+
+### Configuring the Document
+
+The document can be configured by adjusting the settings in the files located in the `./meta/` directory. Every file is dedicated to a specific purpose and provides the possibility to adjust the settings and definitions for the document. Content and context related settings such as title and author can be adjusted in the `parameters.tex` file. Settings regarding the layout and formatting of the document can be adjusted in the `header.tex` and the `commands.tex` files.
+
+> **Note**:  
+> Some of the documents content is only enabled in `thesis`-mode.  
+> This mode can be enabled by setting the `thesis`-flag in the `parameters.tex` file to `true`.  
+> A special type for assignments producing less pages is also available and can be enabled by setting the `assignment`-flag in the `parameters.tex` file to `true`.
+
+Every document has comments and explanations in the files to help the user to understand the purpose and the usage of the settings and definitions.
+
+### Automated Metadata Dates
+
+Date metadata can be generated automatically without editing `meta/parameters.tex`. The selector is `DATE_MODE`, which defaults to `manual` for `latexmk` and to `build` when `scripts/generate-date.sh` is run directly or in GitHub Actions. The timezone is controlled by `DOCUMENT_TIMEZONE` and defaults to `Europe/Berlin`.
+
+The devcontainer and GitHub Actions runner now provision `de_DE.UTF-8` automatically. When listing locales, `locale -a` typically shows the normalized spelling `de_DE.utf8`; that is expected and the script accounts for it.
+
+Examples:
+
+```bash
+DATE_MODE=manual bash scripts/generate-date.sh
+DATE_MODE=build DOCUMENT_TIMEZONE=Europe/Berlin bash scripts/generate-date.sh
+DATE_MODE=commit bash scripts/generate-date.sh
+```
+
+For local builds with the unchanged `.latexmkrc` file, the `DATE_MODE` variable can be exported to the shell for enabling automatic date generation, by running
+
+```bash
+export DATE_MODE=build
+```
+
+If a raw host does not provide the German locale at all, the script falls back to hardcoded German weekday and month names, prints a warning, and still produces valid output.
+
+### Writing
+
+The thesis can be built by extending the directory structure explained under [Structure](#structure) and by adding content to the files. For the most basic layout functions, have a look at the `./chapters/example/` directory. The `example.tex` file provides a simple example including use cases like sub- and subsubsections, lists, tables, figures, references, citations and more.
+
+### Compiling
+
+The document can be compiled using the *LaTeX* distribution *MiKTeX* and the *Perl* distribution *Strawberry Perl*. The compilation can be done using the command line or by using an integrated development environment (IDE) like *Microsoft Visual Studio Code* with the recommended extensions for *LaTeX* support.
+
+To start the compilation execute
+
+```shell
+latexmk
+```
+
+This compiles the document as configured in the `./.latexmkrc` file. This file is used to define the compilation process and the output directory. By default, the output directory is set to `./out/`. Other settings configured in this file are
+
+- the default file to compile,
+- the used *LaTeX* compiler,
+- the number of maximum runs per call,
+- the behavior of the configuration used during [Cleaning Up](#cleaning-up), and
+- custom dependencies required for `glossaries` package.
+
+As an alternative, use the integrated compilation feature of your preferred *LaTeX* editor or IDE.
+
+The compiled document can be found under `./main.pdf` respectively `./out/main.pdf`, depending on the configuration.
+
+### Cleaning Up
+
+To remove files associated to or created by the compilation, use the provided batch or shell script.
+
+- `./cleanup.sh` or `./scripts/cleanup.sh` for *Unix* based systems
+- `./cleanup.bat` or `./scripts/cleanup.bat` for *Microsoft Windows*
+
+The root launchers forward to the scripts under `./scripts/`, so the same commands also work when invoked from either location. By default, the script resolves the project root from its own location, cleans `./out/`, and removes any files listed in `./scripts/cleanup-files`. Furthermore, it moves the artifacts matching `*.pdf` pattern to the project root directory. This behavior can be adjusted by applying the following options:
+
+- `cleanup.* --no-move` prevents the artifacts from being moved
+- `cleanup.* [DIRECTORY]` specifies the output directory to be cleaned up (relative to the project root directory)
+
+The cleanup list now covers the generated file types from the template toolchain, including minted output directories, listings snippets, glossary and acronym intermediates, and the generated date metadata file. The generated PDF is intentionally preserved unless you remove it manually.
+
+As an alternative, `latexmk` can be used to clean up the project directory by executing
+
+```shell
+latexmk -c
+```
+
+to remove build files or
+
+```shell
+latexmk -C
+```
+
+to remove all files created by the compilation process, including the output PDF file.
+
+### Miscellaneous
+
+Nothing.
+
+## Utilizing Development Container
+
+### DevContainer
+
+A *DevContainer* allows developers to define a development environment in a container. This leads to a consistent development environment across different machines and therefore simplifies the setup process while also reducing dependencies on the host system. Some of the most relevant Integrated Development Environments (IDEs) already support the use of *DevContainers*:
+
+- **Visual Studio Code**: [Developing inside a Container](https://code.visualstudio.com/docs/devcontainers/containers)
+- **JetBrains IntelliJ**: [DevContainers](https://www.jetbrains.com/help/idea/connect-to-devcontainer.html)
+
+Any configuration regarding the development container is stored in the `./.devcontainer/` directory. It must not be removed.
+
+### Getting Started locally
+
+#### Prerequisites
+
+To use the *DevContainer* feature, the following software has to be installed on the host system:
+
+- To clone the repository, a **GIT client** is required.
+- For containerizing the development environment, **Docker Desktop** has to be installed via [docker.com](https://www.docker.com/products/docker-desktop/) or by using `winget install -e --id Docker.DockerDesktop`.
+- An **Editor or IDE** as described in the [DevContainer](#devcontainer) section for accessing the development container is required:
+  - **Visual Studio Code** can be downloaded at [code.visualstudio.com](https://code.visualstudio.com/download) or directly installed via `winget install -e --id Microsoft.VisualStudioCode`.
+  - **JetBrains IntelliJ** is recommended to be installed using the [JetBrains Toolbox](https://www.jetbrains.com/toolbox-app/download/).
+
+As of now, it is recommended to use either *Visual Studio Code* or *GitHub Codespaces* to access the development container. Other IDEs are currently adopting this technology, but still have to catch up. 
+
+#### Getting the Docker Image
+
+A Docker Image is up-to-date and available at Docker Hub under [janrother/latex-environment](https://hub.docker.com/repository/docker/janrother/latex-environment). It can be used to start a development environment right away or to include it as base image in a custom Dockerfile. The image is build from the `Dockerfile` located in the `.devcontainer` directory.
+
+To use the Docker Image, run
+
+```shell
+docker pull janrother/latex-environment:latest
+```
+
+or
+
+```shell
+docker run -it janrother/latex-environment:latest
+```
+
+To add the environment as base image in a custom Dockerfile, use
+
+```dockerfile
+FROM janrother/latex-environment:latest as base
+```
+
+#### Starting the Development Container
+
+1. Before starting the development container, ensure that the *Docker Engine* is running on the host system.
+2. Clone your fork of the repository to your local machine using `git clone <your-fork-url>`.
+3. Open the repository as new project in your preferred IDE or editor.
+4. If the editor supports *DevContainers*, a notification should appear to reopen the project in a container.
+5. The editor will build the container and open the project in the development container.
+
+### Getting Started in the Cloud
+
+#### Prerequisites
+
+To use the *DevContainer* remotely, no software has to be installed on the host system. Other requirements have to be met:
+
+- A **GitHub account** at [github.com](https://github.com/) has to be created.
+- A **GitHub repository** containing the toolchain, especially the `.devcontainer` directory, has to be created.
+
+#### Starting a Code Space
+
+1. Open the repository in the browser and click on the `Code` button.
+2. Select `Codespaces` from the dropdown menu.
+3. Click on `Create Codespace on Main` to create a new code space.
+4. The code space will be created and opened in the browser.
+5. After the *DevContainer* is built, the development environment is available right in the browser.
+
+> **Note**:  
+> *Visual Studio Code* provides an option to connect to a *DevContainer* in the cloud.  
+> Therefore, the *GitHub Codespaces* extension has to be installed in the editor.
+
+### Adjust to every Need
+
+The *DevContainer* can be adjusted to every need. The `Dockerfile` defines the base image and the tools installed in the container. The `devcontainer.json` file defines the settings for the development container, thus shaping the development environment.
+
+It is recommended to leave the `Dockerfile` as-is. It uses the `texlive/texlive` image from [hub.docker.com](https://hub.docker.com/r/texlive/texlive) as base image and configures it for the *LaTeX* environment. In its current state, the `latest` tag is used, to ensure that everything is up to date. This and other specifiers can easily be modified using `ARG` variables.
+
+If changes to the development environment are necessary, the `devcontainer.json` file can be adjusted. It uses the image created by the `Dockerfile` and defines the settings for the development container. Besides its behavior, precise settings for the editor `vscode` or the IDEs `jetbrains` can be defined. The `extensions` array can be used to install additional extensions in the development container.
+
+The *DevContainer* provides a pre-configured ZSH shell. It can be further customized by adjusting the `.zshrc` file. The `starship.toml` file can be used to configure the prompt of the shell.
+
+### Compatibility
+
+If after initial creation of a project, a higher compatibility should be achieved, the base images and packages used should be pinned to a specific version.
+
+## Note
+
+I hope this template helped you to get started with your thesis. However, it is possible that it contains errors or is not up to date with the latest guidelines or requirements. If you face any issues or have any suggestions, feel free to contact me.
+
+**Best of luck with your work!**  
+**Jan**
