@@ -43,7 +43,7 @@
             ],
           }
         ],
-        "latex-workshop.latex.outDir": "./paper/out",
+        "latex-workshop.latex.outDir": "./out",
         // LaTeX Workshop Settings: Viewer
         // "latex-workshop.latex.autoClean.run": "onBuilt",                       // enable for auto clean, slower build
         "latex-workshop.view.pdf.viewer": "tab",
