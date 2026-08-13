@@ -10,7 +10,7 @@
 \newcommand{\documentCategory}{Projekt\xspace}
 \newcommand{\course}{Forschungsmethoden und Projektmanagement\xspace}
 \newcommand{\courseAbbreviation}{FMP\xspace}
-\newcommand{\semester}{(W|S)S-JJJJ[/YYYY]\xspace}
+\newcommand{\semester}{SS-2026\xspace}
 \newcommand{\projectDescription}{
     \ifbool{assignment}{\course (\courseAbbreviation)}{Projekttitel}\xspace
 }
@@ -40,18 +40,30 @@
 \newboolean{studentF} \setboolean{studentF}{false}
 
 % metadata concerning the authors
-\newcommand{\studentAName}{Jan Rother\xspace}
-\newcommand{\studentAMatNr}{866331\xspace}
-\newcommand{\studentBName}{Studierende oder Studierender\xspace}
-\newcommand{\studentBMatNr}{00000000\xspace}
-\newcommand{\studentCName}{Studierende oder Studierender\xspace}
-\newcommand{\studentCMatNr}{00000000\xspace}
-\newcommand{\studentDName}{Studierende oder Studierender\xspace}
-\newcommand{\studentDMatNr}{00000000\xspace}
-\newcommand{\studentEName}{Studierende oder Studierender\xspace}
-\newcommand{\studentEMatNr}{00000000\xspace}
-\newcommand{\studentFName}{Studierende oder Studierender\xspace}
-\newcommand{\studentFMatNr}{00000000\xspace}
+\newcommand{\studentAName}{Jan Rother}
+\newcommand{\studentAMatNr}{866331}
+\newcommand{\studentAEMail}{jan.rother@student.wb-hochschule.com}
+\newcommand{\studentAOrcID}{0009-0009-5528-5000}
+\newcommand{\studentBName}{Studierende oder Studierender}
+\newcommand{\studentBMatNr}{00000000}
+\newcommand{\studentBEMail}{vornameB.nachnameB@einrichtungB.org}
+\newcommand{\studentBOrcID}{0000-0000-0000-0000}
+\newcommand{\studentCName}{Studierende oder Studierender}
+\newcommand{\studentCMatNr}{00000000}
+\newcommand{\studentCEMail}{vornameC.nachnameC@einrichtungC.org}
+\newcommand{\studentCOrcID}{0000-0000-0000-0000}
+\newcommand{\studentDName}{Studierende oder Studierender}
+\newcommand{\studentDMatNr}{00000000}
+\newcommand{\studentDEMail}{vornameA.nachnameA@einrichtungA.org}
+\newcommand{\studentDOrcID}{0000-0000-0000-0000}
+\newcommand{\studentEName}{Studierende oder Studierender}
+\newcommand{\studentEMatNr}{00000000}
+\newcommand{\studentEEMail}{vornameA.nachnameA@einrichtungA.org}
+\newcommand{\studentEOrcID}{0000-0000-0000-0000}
+\newcommand{\studentFName}{Studierende oder Studierender}
+\newcommand{\studentFMatNr}{00000000}
+\newcommand{\studentFEMail}{vornameF.nachnameF@einrichtungF.org}
+\newcommand{\studentFOrcID}{0000-0000-0000-0000}
 
 % flags for enabling the visibility of tutors
 \newboolean{tutorA} \setboolean{tutorA}{true}
@@ -80,6 +92,12 @@
 
 % metadata concerning the university
 \newcommand{\university}{Wilhelm Büchner Hochschule}
+\newcommand{\universityStreet}{Hilpertstraße 31}
+\newcommand{\universityPostalCode}{64295}
+\newcommand{\universityCity}{Darmstadt}
+\newcommand{\universityCountry}{Deutschland}
+
+% metadata concerning the faculty and degree program
 \newcommand{\faculty}{Informatik}
 \newcommand{\degree}{Master of Science (M.Sc.)}
 \newcommand{\studies}{Informatik}
@@ -110,14 +128,20 @@
 \newcommand{\documentSubject}{\documentCategory}
 
 % authors of the document (derived from student data, if set to visible)
+% in case of deviant universities, new affiliations can be added to the \documentUniversity command
 \newcommand{\documentAuthor}{%
-    \ifbool{studentA}  {\studentAName, Mat.-Nr.: \studentAMatNr}{}
-    \ifbool{studentB}{\\\studentBName, Mat.-Nr.: \studentBMatNr}{}
-    \ifbool{studentC}{\\\studentCName, Mat.-Nr.: \studentCMatNr}{}
-    \ifbool{studentD}{\\\studentDName, Mat.-Nr.: \studentDMatNr}{}
-    \ifbool{studentE}{\\\studentEName, Mat.-Nr.: \studentEMatNr}{}
-    \ifbool{studentF}{\\\studentFName, Mat.-Nr.: \studentFMatNr}{}
-    \xspace
+    \ifbool{studentA}{\author[1]{\studentAName}{\studentAEMail}{\studentAOrcID}}{}
+    \ifbool{studentB}{\author[1]{\studentBName}{\studentBEMail}{\studentBOrcID}}{}
+    \ifbool{studentC}{\author[1]{\studentCName}{\studentCEMail}{\studentCOrcID}}{}
+    \ifbool{studentD}{\author[1]{\studentDName}{\studentDEMail}{\studentDOrcID}}{}
+    \ifbool{studentE}{\author[1]{\studentEName}{\studentEEMail}{\studentEOrcID}}{}
+    \ifbool{studentF}{\author[1]{\studentFName}{\studentFEMail}{\studentFOrcID}}{}
+}
+
+% universities of the document
+% affiliations link to the authors, if set to visible
+\newcommand{\documentUniversity}{%
+    \affil[1]{\university \\\faculty \\\universityStreet \\\universityPostalCode~\universityCity \\\universityCountry}
 }
 
 % lecturer of the document (derived from tutor)

@@ -15,19 +15,14 @@
 
 
 
-\documentclass[a4paper, oneside, 11pt]{book}
+\documentclass[]{lni}
 \usepackage[utf8]{inputenc}
 
 % --------------------------------------------------
 % Configurations
 % --------------------------------------------------
 
-\newif\ifdraft
-\draftfalse												% flag: marks document as draft and shows to-do-notes, comment or set to "draftfalse"
-
 \input{./meta/preamble}									% load meta configurations
-
-\setcounter{chapter}{0}									% set chapter counter to -1 to start with 0
 
 \addbibresource{literature.bib}							% import bibliography
 
@@ -42,76 +37,49 @@
 
 \graphicspath{{images/}}								% set graphics path
 
-% --------------------------------------------------
+% ------------------------------------------------
 % Document
-% --------------------------------------------------
+% ------------------------------------------------
 
 \begin{document}
 
-	%---------------------------------------------------------------
+	% ------------------------------------------------
 	% Document: Front Matter
-	%---------------------------------------------------------------
+	% ------------------------------------------------
 
-	\listoftodos
-	\input{main/cover}
+	\title{\documentTitle}
+	\subtitle{\documentSubtitle}
 
-	\ifbool{thesis}{
-		\input{./main/preface}
-		\input{./main/abstract}
-	}{}
-
-	\input{./main/affidavit}
-
-	\tableofcontents
-
-	\ifbool{assignment}{}{
-		\printglossary[type=\acronymtype, title=Abkürzungsverzeichnis, style=listdotted]
-		\printglossary[type=\glsdefaulttype, title=Glossar] % style: see meta/header.tex
-	}
+	\documentAuthor
+	\documentUniversity
 
 	\glsresetall
 
-	%---------------------------------------------------------------
+	\maketitle
+
+	\input{./main/abstract}
+
+	% ------------------------------------------------
 	% Document: Main Matter
-	%---------------------------------------------------------------
+	% ------------------------------------------------
 
-	\mainmatter
-
-	\ifbool{assignment}{
-		\renewcommand{\chaptername}{Aufgabe}
-	}
-	
-	\input{./chapters/00/_abstract}
 	\input{./chapters/01/_section}
+	\input{./chapters/02/_section}
 
-	%-----------------------------------------------------------
+	% ------------------------------------------------
 	% Document: Back Matter
-	%-----------------------------------------------------------
+	% ------------------------------------------------
 
 	\clearpage\phantomsection
 	\renewcommand{\bibname}{Literaturverzeichnis}			% set bibliography title, default: Literatur
 	\addcontentsline{toc}{chapter}{Literaturverzeichnis}
 	\printbibliography
-
-	\begingroup
-		\clearpage\phantomsection
-			\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
-			\listoffigures
-		%\let\clearpage\relax
-		%\let\cleardoublepage\relax
-		\ifbool{thesis}{\clearpage\phantomsection}{}
-			\addcontentsline{toc}{chapter}{Tabellenverzeichnis}
-			\listoftables
-		\ifbool{thesis}{\clearpage\phantomsection}{}
-			\addcontentsline{toc}{chapter}{Verzeichnis der Codeausschnitte}
-			\listofsnippets
-	\endgroup
 	
 	\clearpage
 
-	%-----------------------------------------------------------
+	% ------------------------------------------------
 	% Document: Appendix
-	%-----------------------------------------------------------
+	% ------------------------------------------------
 
 	\appendix
 	\renewcommand{\chaptername}{Anhang}
