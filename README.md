@@ -35,7 +35,8 @@ The repository consists of several artifacts required for the assignments of the
 
 Therefore, the repository contains the following main folders:
 
-- **[exposee](./exposee)**: The exposé of the assignment, as Word and PDF document.
+- **[exposee](./exposee)**: The exposé of the assignment, as *Word* and *PDF* document.
+- **[notes](./notes)**: Research and reading notes for the written paper, as *Markdown* documents.
 - **[paper](./paper)**: The written paper of the assignment, as *LaTeX* document.
 - **[presentation](./presentation)**: The presentation of the assignment.
 - **[poster](./poster)**: The poster of the assignment.
@@ -43,10 +44,11 @@ Therefore, the repository contains the following main folders:
 To jump right into the respective documentation of the submodules, the `README.md` files at the root of each subfolder provide further information and guidance:
 
 - [exposee/README.md](./exposee/README.md)
+- [notes/README.md](./notes/README.md)
 - [paper/README.md](./paper/README.md)
 - [presentation/README.md](./presentation/README.md)
 - [poster/README.md](./poster/README.md)
 
 ## Notes
 
-None.
+The [`notes/`](./notes) folder contains research and reading notes for the written paper, one Markdown file per chapter. The file `00_example.md` serves as a format reference and is not a content note. All other files follow the same structure and map to the chapters in `paper/chapters/`. Notes are part of the root-level structure of the repository, as they might also lay the foundation for other artifacts, such as the presentation or poster.
